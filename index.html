@@ -1,16 +1,123 @@
 <!doctype html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no">
-		<meta name="mobile-web-app-capable" content="yes">
+<html> 
+<head> 
+	<meta charset="utf-8"> 
+	<title>Go wasm</title> 
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body> 
+	<!-- Оверлей загрузки, который показывается при загрузке WASM -->
+	<div id="loading">
+		<div id="spinner"></div> 
+		<div>Загрузка WebAssembly...</div> 
+	</div>
+
+	<div id="errorLoading">Ошибка загрузки WebAssembly. Проверьте консоль для деталей.</div>
+
+	<button onClick="run();" id="runButton" disabled>СТАРТ</button>
+
+	<canvas id="appCanvas"></canvas>
+
+	<script src="wasm_exec.js"></script>
+	<script>
+
+
+		// Проверяем, поддерживает ли браузер WebAssembly.instantiateStreaming
+		// Если нет - добавляем полифилл (замену) для этой функции
+		if (!WebAssembly.instantiateStreaming) { // polyfill
+			// Определяем функцию instantiateStreaming
+			WebAssembly.instantiateStreaming = async (resp, importObject) => {
+				const source = await (await resp).arrayBuffer();
+				return await WebAssembly.instantiate(source, importObject);
+			};
+		}
+
+		// Создаем новый экземпляр Go (из wasm_exec.js)
+		const go = new Go();
+
+		// Переменные для хранения модуля и экземпляра WebAssembly
+		let mod, inst;
 		
-		<title>command-line-arguments</title>
-		<script src="wasm.js"></script>
-		<style>
-			body,pre { margin:0;padding:0; }
-		</style>
-	</head>
-	<body>
-	</body>
-</html>
+		const loadingElement = document.getElementById('loading');
+		const canvas = document.getElementById('appCanvas');
+
+		const ctx = canvas.getContext("2d");
+		x = 0.;
+		y = 0.;
+		globalTime = 0;
+
+		resizeCanvas();
+		
+		
+		// Загружаем и инициализируем WebAssembly модуль
+		WebAssembly.instantiateStreaming(fetch("wasm.wasm"), go.importObject).then((result) => {
+			// При успешной загрузке:
+			mod = result.module; // Сохраняем модуль
+			inst = result.instance; // Сохраняем экземпляр
+
+			// Разблокируем кнопку Run
+			document.getElementById("runButton").disabled = false;
+			
+			loadingElement.style.display = 'none'
+		}).catch((err) => {
+
+			console.error(err); 
+
+			loadingElement.style.display = 'none'
+			document.getElementById('errorLoading').style.display = 'flex'
+		});
+
+
+		async function run() {
+			// Скрываем кнопку
+            runButton.style.display = 'none';
+			
+			// Показываем canvas 
+			canvas.style.display = 'block';
+
+			go.run(inst);
+
+			interval1 = setInterval(upd, 50)
+
+			initAnimation()
+		}
+
+		function upd() {
+			x++
+			y++
+		}
+
+
+		function initAnimation(time) {
+			delta = time - globalTime
+			console.info(delta)
+			globalTime = time
+
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.fillStyle = "green";
+
+			del = delta / 1000
+
+			console.info(del)
+
+			console.info(x, y)
+
+
+			ctx.fillRect(x, y, 100, 100);
+
+			// goDraw()
+			requestAnimationFrame(initAnimation)
+		}
+
+
+		function resizeCanvas() {
+			canvas.width = document.documentElement.clientWidth;
+			canvas.height = document.documentElement.clientHeight;
+		}
+
+		window.addEventListener("resize", resizeCanvas)
+	</script>	
+</body>
+
+</html
