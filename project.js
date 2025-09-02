@@ -3,7 +3,7 @@
 async function Init() {
 
   document.getElementById("loadingScreen").style.display = "flex"
-  document.getElementById("startButton").style.display = "none"
+  // document.getElementById("startButton").style.display = "none"
   // константы
   const canvas = document.getElementById("appCanvas")
   const ctx = await canvas.getContext("2d")
@@ -40,7 +40,7 @@ async function Init() {
   canvas.addEventListener("click", clickHandler)
 
   const element = document.documentElement
-  element.requestFullscreen()
+  // element.requestFullscreen()
 
   await initWasm()
 
@@ -121,4 +121,4 @@ async function Init() {
 
 }
 
-// Init()
+Init()
