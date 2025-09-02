@@ -1,4 +1,5 @@
 body {
+    /* background-color: #3498db; */
     margin: 0;
     padding: 0;
     width: 100vw;
@@ -10,7 +11,7 @@ body {
 }
 
 /* отображение загрузки wasm */
-.loading {
+.loadingScreen {
     position: fixed; /* Фиксированное позиционирование (не скроллится) */
     top: 0; /* Прижато к верху */
     left: 0; /* Прижато к левому краю */
@@ -25,7 +26,7 @@ body {
 }
 
 /* отображение ошибки загрузки */
-.errorLoading {
+.errorLoadingScreen {
     color: red;
     position: fixed; /* Фиксированное позиционирование (не скроллится) */
     top: 0; /* Прижато к верху */
@@ -58,11 +59,11 @@ body {
 
 /* Стиль для самого canvas элемента */
 .appCanvas {
+    /* background-color: #db5534; */
     display: block;
     margin: 0; /* внешние отступы */
     padding: 0; /* внутренние отступы */
     border: none; /* убрать границу (рамку) */
     width: 100vw; /* На всю ширину */
     height: 100vh; /* На всю высоту видимой области (viewport height) */
-    display: none; /* Блочное отображение */
 }

@@ -1,93 +1,31 @@
-<!doctype html>
-<html> 
-<head> 
-	<meta charset="utf-8"> 
-	<title>Go wasm</title> 
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title>Tincan</title>
 	<link rel="stylesheet" href="style.css">
+	<script src="wasm_exec.js" defer></script>
+	<script src="instantiate_wasm.js" defer></script>
+	<script src="project.js" defer></script>
 </head>
 
-<body> 
-	<!-- Оверлей загрузки, который показывается при загрузке WASM -->
-	<div id="loading" class="loading">
-		<div class="spinner"></div> 
-		<div>Загрузка WebAssembly...</div> 
+<body> <!-- загрузка wasm -->
+	<!-- экран который показывается при загрузке WASM -->
+	<div id="loadingScreen" class="loadingScreen">
+		<div class="spinner"></div>
+		<div>Загрузка WebAssembly...</div>
 	</div>
 
-	<div id="errorLoading" class="errorLoading">Ошибка загрузки WebAssembly. Проверьте консоль для деталей.</div>
-
-	<canvas id="appCanvas" class="appCanvas"></canvas>
-
-	<script src="wasm_exec.js"></script>
-	<script>
-		// Проверяем, поддерживает ли браузер WebAssembly.instantiateStreaming
-		// Если нет - добавляем полифилл (замену) для этой функции
-		if (!WebAssembly.instantiateStreaming) { // polyfill
-			// Определяем функцию instantiateStreaming
-			WebAssembly.instantiateStreaming = async (resp, importObject) => {
-				const source = await (await resp).arrayBuffer();
-				return await WebAssembly.instantiate(source, importObject);
-			};
-		}
-		
-		const loadingElement = document.getElementById('loading');
-		const canvas = document.getElementById('appCanvas');
-
-		const ctx = canvas.getContext("2d");
-
-		// resizeCanvas();
-		
-		// Создаем новый экземпляр Go (из wasm_exec.js)
-		const go = new Go();
-
-		// Загружаем и инициализируем WebAssembly модуль
-		WebAssembly.instantiateStreaming(fetch("wasm.wasm"), go.importObject).then((result) => {
-			// Сохраняем экземпляр
-			inst = result.instance; 
-			
-			// Показываем canvas 
-			canvas.style.display = 'block';
-
-			go.run(inst);
-
-			initAnimation()
-			
-			loadingElement.style.display = 'none'
-		}).catch((err) => {
-
-			console.error(err); 
-
-			loadingElement.style.display = 'none'
-			document.getElementById('errorLoading').style.display = 'flex'
-		});
-
-		function initAnimation(time) {
-			// x = time / 1000. * 50;
-			// y = time / 1000. * 50;
-			
-			// ctx.clearRect(0, 0, canvas.width, canvas.height);
-			// ctx.fillStyle = "green";
-
-
-			// ctx.fillRect(x, y, 100, 100);
-
-			// requestAnimationFrame(initAnimation)
-		}
-
-
-		// function resizeCanvas() {
-		// 	canvas.width = document.documentElement.clientWidth;
-		// 	canvas.height = document.documentElement.clientHeight;
-		// }
-
-		// window.addEventListener("resize", resizeCanvas)
-
-		// keyup отпущена
-		// document.addEventListener('keydown', function(event) {
-		// 	if (event.key === 'e') {
-		// 		console.log('Клавиша E нажата');
-		// 	}
-		// });	
-	</script>	
+	<!-- экран при ошибке загрузки wasm -->
+	<div id="errorLoadingScreen" class="errorLoadingScreen">
+		Ошибка загрузки WebAssembly. Проверьте консоль для деталей.
+	</div>
 </body>
 
-</html
+
+<body> 
+	<canvas id="appCanvas" class="appCanvas"></canvas>
+</body>
+
+</html>
