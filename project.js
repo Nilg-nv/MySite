@@ -27,7 +27,10 @@ async function Init() {
   addEventListener("resize", resizeCanvas)
 
   async function clickHandler(event) {
-    Wasm.PaintPoint(event.clientX, event.clientY)
+    const rect = canvas.getBoundingClientRect()
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+    Wasm.PaintPoint(x, y)
     Wasm.CalcCoordsImage()
     let bitmap = await createImageBitmap(imageData)
     ctx.drawImage(
