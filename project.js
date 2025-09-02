@@ -6,10 +6,19 @@ async function Init() {
   const ctx = await canvas.getContext("2d")
 
   // инициализация эвентов
-  function resizeCanvas() {
+  async function resizeCanvas() {
     canvas.width = document.documentElement.clientWidth
     canvas.height = document.documentElement.clientHeight
     ctx.imageSmoothingEnabled = false // отключение размытия
+    Wasm.SetSizeCanvas(canvas.width, canvas.height)
+    Wasm.CalcCoordsImage()
+
+    let bitmap = await createImageBitmap(imageData)
+    ctx.drawImage(
+      bitmap, 
+      coordsImage[0], coordsImage[1], coordsImage[2], coordsImage[3], 
+      coordsImage[4], coordsImage[5], coordsImage[6], coordsImage[7]
+    )
   }
 
   addEventListener("resize", resizeCanvas)
@@ -27,8 +36,6 @@ async function Init() {
 
   canvas.addEventListener("click", clickHandler)
 
-
-  resizeCanvas()
 
   await initWasm()
 
@@ -63,16 +70,19 @@ async function Init() {
   const sizeDimensionImage = Wasm.SizeSizeImage()
   const coordsImage = new Float64Array(Wasm.memory.buffer, Wasm.GetRefSize(), sizeDimensionImage)
 
-  Wasm.SetSizeCanvas(canvas.width, canvas.height)
   Wasm.Paint()
-  Wasm.CalcCoordsImage()
+  // Wasm.SetSizeCanvas(canvas.width, canvas.height)
+  
+  // Wasm.CalcCoordsImage()
 
-  let bitmap = await createImageBitmap(imageData)
-  ctx.drawImage(
-    bitmap, 
-    coordsImage[0], coordsImage[1], coordsImage[2], coordsImage[3], 
-    coordsImage[4], coordsImage[5], coordsImage[6], coordsImage[7]
-  )
+  // let bitmap = await createImageBitmap(imageData)
+  // ctx.drawImage(
+  //   bitmap, 
+  //   coordsImage[0], coordsImage[1], coordsImage[2], coordsImage[3], 
+  //   coordsImage[4], coordsImage[5], coordsImage[6], coordsImage[7]
+  // )
+
+  resizeCanvas()
 
   
   // const imgData = new ImageData(arr8, 2, 2)
