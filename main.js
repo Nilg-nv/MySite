@@ -68,6 +68,10 @@ async function Init() {
   }
 
   ctx.fillStyle = "black"
+
+  var startTime = 0
+  var count = 0
+  var text = 0 
   function loop(time) {
     Wasm.Loop(time)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -80,6 +84,15 @@ async function Init() {
       const y2 = Wasm.TempY2(i)
       drawLine(x1, y1, x2, y2) 
     }
+
+    var delta = time - startTime
+    ++count
+    if(delta > 1000) {
+      startTime = time
+      text = count
+      count = 0
+    }
+    ctx.fillText(text, 10, 10)
 
 
     requestAnimationFrame(loop)
